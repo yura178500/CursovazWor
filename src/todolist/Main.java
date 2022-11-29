@@ -41,6 +41,8 @@ public class Main {
                         break;
                     case "4":
                         break;
+                    case "5":
+                        todoList.runTask();
 
                     default:
                         Messages.unknownMessage();

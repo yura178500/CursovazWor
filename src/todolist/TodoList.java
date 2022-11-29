@@ -7,12 +7,11 @@ import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
- // Этот класс представляет ToDoList, который содержит ArrayList объектов Task
+ * // Этот класс представляет ToDoList, который содержит ArrayList объектов Task
  **/
 
 public class TodoList {
@@ -20,26 +19,26 @@ public class TodoList {
     private ArrayList<Task> taskList;
 
     /**
-     // создание объекта ToDoList
+     * // создание объекта ToDoList
      */
     public TodoList() {
         taskList = new ArrayList<>();
     }
 
     /**
-     // Добавление объекта задачи в ArrayList
-     // title Строка, содержащая заголовок задачи, и она не может быть пустой или null.
-     //  project Строка, содержащая имя проекта, связанного с задачей, и это может быть пустая строка.
-     // параметр указывает дату выполнения задачи в формате гггг-мм-дд
+     * // Добавление объекта задачи в ArrayList
+     * // title Строка, содержащая заголовок задачи, и она не может быть пустой или null.
+     * //  project Строка, содержащая имя проекта, связанного с задачей, и это может быть пустая строка.
+     * // параметр указывает дату выполнения задачи в формате гггг-мм-дд
      */
-    public void addTask(String title, String project, LocalDate dueDate) {
-        this.taskList.add(new Task(title,project,dueDate));
+    public void addTask(String title, String project, String taskDescription, LocalDate dueDate) {
+        this.taskList.add(new Task(title, project, taskDescription, dueDate));
     }
 
     /**
-     / Способ считывания значения от пользователя (стандартный ввод, т.е. терминал)
-     // для создания объекта Task и добавления в ArrayList задач
-     // возвращает значение true, если объект Tasks создан и добавлен в ArrayList, в противном случае значение false
+     * / Способ считывания значения от пользователя (стандартный ввод, т.е. терминал)
+     * // для создания объекта Task и добавления в ArrayList задач
+     * // возвращает значение true, если объект Tasks создан и добавлен в ArrayList, в противном случае значение false
      */
     public boolean readTaskFromUser() {
         Scanner scan = new Scanner(System.in);
@@ -50,25 +49,27 @@ public class TodoList {
             String title = scan.nextLine();
             System.out.print(">>> Название проекта: ");
             String project = scan.nextLine();
+            System.out.print(">>> Описание задачи: ");
+            String taskDescription = scan.nextLine();
             System.out.print(">>> Due Date [example: 2022-12-27] : ");
             LocalDate dueDate = LocalDate.parse(scan.nextLine());
 
-            this.taskList.add(new Task(title,project,dueDate));
+            this.taskList.add(new Task(title, project, taskDescription, dueDate));
             Messages.showMessage("Задача успешно добавлена", false);
 
             return true;
         } catch (Exception e) {
-            Messages.showMessage(e.getMessage(),true);
+            Messages.showMessage(e.getMessage(), true);
             return false;
         }
 
     }
 
     /**
-     // Способ считывания значения от пользователя (стандартный ввод, т.е. терминал)
-     //* и обновите данный объект Task в ArrayList задач
-      // task объект задачи, значение которого необходимо обновить с помощью пользовательского ввода
-     // возвращает значение true, если объект Tasks обновлен в ArrayList, в противном случае значение false
+     * // Способ считывания значения от пользователя (стандартный ввод, т.е. терминал)
+     * //* и обновите данный объект Task в ArrayList задач
+     * // task объект задачи, значение которого необходимо обновить с помощью пользовательского ввода
+     * // возвращает значение true, если объект Tasks обновлен в ArrayList, в противном случае значение false
      */
     public boolean readTaskFromUserToUpdate(Task task) {
         Scanner scan = new Scanner(System.in);
@@ -90,6 +91,12 @@ public class TodoList {
                 task.setProject(project);
                 isTaskUpdated = true;
             }
+            System.out.print(">>> Описание задачи: ");
+            String taskDescription = scan.nextLine();
+            if (!(project.trim().equals("") || project == null)) {
+                task.setTaskDescription(taskDescription);
+                isTaskUpdated = true;
+            }
 
             System.out.print(">>> Due Date [example: 2022-12-27] : ");
             String dueDate = scan.nextLine();
@@ -108,83 +115,86 @@ public class TodoList {
     }
 
     /**
-     // Способ отображения содержимого ArrayList с первым столбцом в качестве номера задачи
+     * // Способ отображения содержимого ArrayList с первым столбцом в качестве номера задачи
      */
     public void listAllTasksWithIndex() {
-        String displayFormat = "%-4s%-35s %-20s %-10s %-10s";
+        String displayFormat = "%-4s %-15s %-15s %-10s %-10s";;
 
-        if (taskList.size()>0) {
-            System.out.println(String.format(displayFormat,"NUM","TITLE","PROJECT","DUE DATE","COMPLETED"));
-            System.out.println(String.format(displayFormat,"===","=====","=======","========","========="));
+        if (taskList.size() > 0) {
+            System.out.println(String.format(displayFormat, "NUM", "TITLE", "PROJECT","DESCRIPTION", "DUE DATE", "COMPLETED"));
+            System.out.println(String.format(displayFormat, "===", "=====", "=======", "=========","========", "========="));
         } else {
             System.out.println(Messages.RED_TEXT + "Никаких задач для показа" + Messages.RESET_TEXT);
         }
 
         taskList.stream()
                 .forEach(task -> System.out.println(String.format(displayFormat,
-                        taskList.indexOf(task)+1,
+                        taskList.indexOf(task) + 1,
                         task.getTitle(),
                         task.getProject(),
+                        task.getTaskDescription(),
                         task.getDueDate(),
-                        (task.isComplete()?"Да":"Нет")
+                        (task.isComplete() ? "Да" : "Нет")
                 )));
     }
 
     /**
-     //Метод для отображения содержимого ArrayList
-     //  Сортирует строку, содержащую число "2", для сортировки по проекту, в противном случае она будет сортироваться по дате
+     * //Метод для отображения содержимого ArrayList
+     * //  Сортирует строку, содержащую число "2", для сортировки по проекту, в противном случае она будет сортироваться по дате
      */
     public void listAllTasks(String sortBy) {
-        Messages.separator('=',75);
+        Messages.separator('=', 75);
         System.out.println(
                 "Общее количество задач = " + taskList.size() +
                         "\t\t (Выполнено = " + completedCount() + "\t\t" +
                         Messages.RED_TEXT + " Не Выполнено = " + notCompletedCount() + Messages.RESET_TEXT +
                         " )");
-        Messages.separator('=',75);
+        Messages.separator('=', 75);
 
         if (sortBy.equals("2")) {
-            String displayFormat = "%-20s %-35s %-10s %-10s";
+            String displayFormat = "%-15s %-10s %-10s %-25s %-10s";
 
-            if (taskList.size()>0) {
-                System.out.println(String.format(displayFormat,"PROJECT","TITLE","DUE DATE","COMPLETED"));
-                System.out.println(String.format(displayFormat,"=======","=====","========","========="));
+            if (taskList.size() > 0) {
+                System.out.println(String.format(displayFormat, "PROJECT", "TITLE", "DESCRIPTION","DUE DATE", "COMPLETED"));
+                System.out.println(String.format(displayFormat, "=======", "=====", "========","========", "========="));
             } else {
                 System.out.println(Messages.RED_TEXT + "No tasks to show" + Messages.RESET_TEXT);
             }
 
             taskList.stream()
                     .sorted(Comparator.comparing(Task::getProject))
-                    .forEach(task -> System.out.println(String.format(displayFormat,task.getProject(),
+                    .forEach(task -> System.out.println(String.format(displayFormat, task.getProject(),
                             task.getTitle(),
+                            task.getTaskDescription(),
                             task.getDueDate(),
-                            (task.isComplete()?"Да":"Нет")
+                            (task.isComplete() ? "Да" : "Нет")
                     )));
         } else {
-            String displayFormat = "%-10s %-35s %-20s %-10s";
+            String displayFormat = "%-15s %-10s %-10s %-25s %-10s";
 
             if (taskList.size() > 0) {
-                System.out.println(String.format(displayFormat,"DUE DATE","TITLE","PROJECT" , "COMPLETED"));
-                System.out.println(String.format(displayFormat,"========","=====","=======" , "========="));
+                System.out.println(String.format(displayFormat, "DUE DATE", "TITLE", "PROJECT","DESCRIPTION", "COMPLETED"));
+                System.out.println(String.format(displayFormat, "========", "=====", "=======", "=========","========="));
             } else {
                 System.out.println(Messages.RED_TEXT + "Никаких задач для показа" + Messages.RESET_TEXT);
             }
 
             taskList.stream()
                     .sorted(Comparator.comparing(Task::getDueDate))
-                    .forEach(task -> System.out.println(String.format(displayFormat,task.getDueDate(),
+                    .forEach(task -> System.out.println(String.format(displayFormat, task.getDueDate(),
                             task.getTitle(),
                             task.getProject(),
+                            task.getTaskDescription(),
                             (task.isComplete() ? "Да" : "Нет")
                     )));
         }
     }
 
     /**
-     // Способ выбора конкретного объекта задачи из списка массивов и выполнения операций редактирования
-     //  параметр selectedTask Номер задачи, выбранный пользователем из заданного списка для выполнения операций редактирования
-     // выдает исключение NullPointerException, если номер задачи задан как пустая строка или null
-     // вызывает исключение ArrayIndexOutOfBoundsException, если номер задачи не попадает в диапазон индексов ArrayList
+     * // Способ выбора конкретного объекта задачи из списка массивов и выполнения операций редактирования
+     * //  параметр selectedTask Номер задачи, выбранный пользователем из заданного списка для выполнения операций редактирования
+     * // выдает исключение NullPointerException, если номер задачи задан как пустая строка или null
+     * // вызывает исключение ArrayIndexOutOfBoundsException, если номер задачи не попадает в диапазон индексов ArrayList
      */
     public void editTask(String selectedTask) throws NullPointerException {
         try {
@@ -221,13 +231,13 @@ public class TodoList {
                     Messages.showMessage("Возвращаясь к Main Menu", true);
             }
         } catch (Exception e) {
-            Messages.showMessage(e.getMessage(),true);
+            Messages.showMessage(e.getMessage(), true);
         }
     }
 
     /**
-     // Метод подсчета количества задач со статусом выполненных
-     // возвращает количество задач со статусом выполненных
+     * // Метод подсчета количества задач со статусом выполненных
+     * // возвращает количество задач со статусом выполненных
      */
     public int completedCount() {
         return (int) taskList.stream()
@@ -236,8 +246,8 @@ public class TodoList {
     }
 
     /**
-     // Метод подсчета количества задач со статусом незавершенных
-     // возвращает количество задач со статусом незавершенных
+     * // Метод подсчета количества задач со статусом незавершенных
+     * // возвращает количество задач со статусом незавершенных
      */
     public int notCompletedCount() {
         return (int) taskList.stream()
@@ -246,9 +256,9 @@ public class TodoList {
     }
 
     /**
-     // Этот метод считает файл данных с диска, который будет содержать данные ранее сохраненных задач.
-     // filename строка, указывающая полный путь и расширение файла данных, например, "ресурсы/задачи.obj"
-    // возвращает значение true, если операция чтения прошла успешно, в противном случае значение false
+     * // Этот метод считает файл данных с диска, который будет содержать данные ранее сохраненных задач.
+     * // filename строка, указывающая полный путь и расширение файла данных, например, "ресурсы/задачи.obj"
+     * // возвращает значение true, если операция чтения прошла успешно, в противном случае значение false
      */
     public boolean readFromFile(String filename) {
         boolean status = false;
@@ -269,15 +279,15 @@ public class TodoList {
             return true;
 
         } catch (Exception e) {
-            Messages.showMessage(e.getMessage(),true);
+            Messages.showMessage(e.getMessage(), true);
             return false;
         }
     }
 
     /**
-     // Этот метод запишет данные задач из ArrayList в файл данных на диске, т.е. tasks.obj
-     // filename строка, указывающая полный путь и расширение файла данных, например, "ресурсы/задачи.obj"
-     // возвращает значение true, если операция чтения прошла успешно, в противном случае значение false
+     * // Этот метод запишет данные задач из ArrayList в файл данных на диске, т.е. tasks.obj
+     * // filename строка, указывающая полный путь и расширение файла данных, например, "ресурсы/задачи.obj"
+     * // возвращает значение true, если операция чтения прошла успешно, в противном случае значение false
      */
     public boolean saveToFile(String filename) {
         try {
@@ -291,8 +301,26 @@ public class TodoList {
             return true;
 
         } catch (Exception e) {
-            Messages.showMessage(e.getMessage(),true);
+            Messages.showMessage(e.getMessage(), true);
             return false;
         }
+    }      public void runTask() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(
+                Calendar.DAY_OF_WEEK,
+                Calendar.MONDAY
+        );
+        calendar.set(Calendar.HOUR_OF_DAY, 15);
+        calendar.set(Calendar.MINUTE, 40);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Timer time = new Timer(); // Создать экземпляр объекта таймера
+        // Начните выполнение задачи в понедельник в 15:40:00, период установлен на 24 часов
+        // если вы хотите немедленно запустить задачу, установите для 2-го параметра значение 0
+        TimeUnit.HOURS.toMillis(24);
+        // time.schedule(new CustomTask(), calendar.getTime(), TimeUnit.HOURS.toMillis(24));
     }
+
 }

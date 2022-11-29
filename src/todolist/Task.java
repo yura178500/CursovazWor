@@ -12,6 +12,8 @@ public class Task implements Serializable {
     // Строка, содержащая название проекта, связанного с задачей, и это может быть пустая строка.
     private String project;
     // Логическое значение, если true: задача выполнена, в противном случае false.
+    private String taskDescription;
+    // Строка, содержащая описание задачи, и она не может быть пустой или null.
     private boolean complete;
     // Дата выполнения задания в формате гггг-мм-дд
     private LocalDate dueDate;
@@ -23,12 +25,28 @@ public class Task implements Serializable {
      // project Строка, содержащая имя проекта, связанного с задачей, и это может быть пустая строка.
     //параметр указывает дату выполнения задачи в формате гггг-мм-дд
      */
-    public Task(String title, String project, LocalDate dueDate) {
+    public Task(String title, String project,String taskDescription, LocalDate dueDate) {
 
         this.setTitle(title);
         this.setProject(project);
+        this.setTaskDescription(taskDescription);
         this.complete = false;
         this.setDueDate(dueDate);
+    }
+    /**
+     // Способ получения описания задачи
+     //возвращает строку, содержащую название задачи
+     */
+    public String getTaskDescription() {
+        return taskDescription;
+    }
+    /**
+     // Способ задать описания  задачи
+     //title Строка, содержащая заголовок задачи, и она  может быть пустой или null.
+     // выдает исключение NullPointerException, если заголовок равен нулю или пустой строке
+     */
+    public void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
     }
 
     /**
@@ -125,6 +143,7 @@ public class Task implements Serializable {
         return (
                 "\nЗадача     : " + title +
                         "\nПроект   : " + project +
+                        "\nОписание : " + taskDescription +
                         "\nСтатус   : " + (complete?"Завершено":"НЕ ЗАВЕРШЕНО") +
                         "\nДата  : " + dueDate +
                         "\n");
