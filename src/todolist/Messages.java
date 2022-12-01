@@ -2,6 +2,7 @@ package todolist;
 
 
 public class Messages {
+
     //постоянное поле для хранения кода для сброса цвета шрифта текста
     public static final String RESET_TEXT = "\u001B[0m";
     //постоянное поле для хранения кода для изменения цвета шрифта текста на красный
