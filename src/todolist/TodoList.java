@@ -18,6 +18,37 @@ public class TodoList {
     // Массив список объектов задачи
     private ArrayList<Task> taskList;
 
+    private enum FrequencyTask {
+
+        ONETIME(LocalDate.of(2022, 12, 1)),//"однократная
+        DAILY(LocalDate.of(2022, 12, 1)), //ежедневная
+        WEEKLY(LocalDate.of(2022, 12, 1)), //еженедельная
+        MONTHLY(LocalDate.of(2022, 12, 1)), //ежемесячная
+        ANNUAL(LocalDate.of(2022, 12, 1)); //ежегодная
+
+
+        private LocalDate localDate;
+
+        public void setLocalDate(LocalDate localDate) {
+            this.localDate = localDate;
+        }
+
+        // Constructor
+        FrequencyTask(LocalDate ld) {
+
+            Objects.requireNonNull(ld);
+            this.localDate = ld;
+        }
+
+        // Getter
+        public LocalDate getLocalDate() {
+            return this.localDate;
+        }
+
+        LocalDate ld = getLocalDate();
+    }
+
+
     /**
      * // создание объекта ToDoList
      */
@@ -31,8 +62,8 @@ public class TodoList {
      * //  project Строка, содержащая имя проекта, связанного с задачей, и это может быть пустая строка.
      * // параметр указывает дату выполнения задачи в формате гггг-мм-дд
      */
-    public void addTask(String title, String project, String taskDescription, LocalDate dueDate) {
-        this.taskList.add(new Task(title, project, taskDescription, dueDate));
+    public void addTask(String title, String project, String taskDescription, LocalDate ld, LocalDate dueDate) {
+        this.taskList.add(new Task(title, project, taskDescription, ld, dueDate));
     }
 
     /**
@@ -51,10 +82,12 @@ public class TodoList {
             String project = scan.nextLine();
             System.out.print(">>> Описание задачи: ");
             String taskDescription = scan.nextLine();
+            System.out.print("Выбор периодичности задачи : ");
+            LocalDate ld = LocalDate.parse(scan.nextLine());
             System.out.print(">>> Due Date [example: 2022-12-27] : ");
             LocalDate dueDate = LocalDate.parse(scan.nextLine());
 
-            this.taskList.add(new Task(title, project, taskDescription, dueDate));
+            this.taskList.add(new Task(title, project, taskDescription, ld, dueDate));
             Messages.showMessage("Задача успешно добавлена", false);
 
             return true;
@@ -97,6 +130,12 @@ public class TodoList {
                 task.setTaskDescription(taskDescription);
                 isTaskUpdated = true;
             }
+            System.out.print(">>> Выбор периодичности задачи : ");
+            String ld = scan.nextLine();
+            if (!(ld.trim().equals("") || ld == null)) {
+                task.setLd(LocalDate.parse(ld));
+                isTaskUpdated = true;
+            }
 
             System.out.print(">>> Due Date [example: 2022-12-27] : ");
             String dueDate = scan.nextLine();
@@ -118,11 +157,12 @@ public class TodoList {
      * // Способ отображения содержимого ArrayList с первым столбцом в качестве номера задачи
      */
     public void listAllTasksWithIndex() {
-        String displayFormat = "%-4s %-15s %-15s %-10s %-10s";;
+        String displayFormat = "%-4s %-15s %-15s %-15s %-10s %-10s";
+        ;
 
         if (taskList.size() > 0) {
-            System.out.println(String.format(displayFormat, "NUM", "TITLE", "PROJECT","DESCRIPTION", "DUE DATE", "COMPLETED"));
-            System.out.println(String.format(displayFormat, "===", "=====", "=======", "=========","========", "========="));
+            System.out.println(String.format(displayFormat, "NUM", "TITLE", "PROJECT", "DESCRIPTION", "FrequencyTask", "DUE DATE", "COMPLETED"));
+            System.out.println(String.format(displayFormat, "===", "=====", "=======", "=========", "========", "============", "========="));
         } else {
             System.out.println(Messages.RED_TEXT + "Никаких задач для показа" + Messages.RESET_TEXT);
         }
@@ -133,6 +173,7 @@ public class TodoList {
                         task.getTitle(),
                         task.getProject(),
                         task.getTaskDescription(),
+                        task.getLd(),
                         task.getDueDate(),
                         (task.isComplete() ? "Да" : "Нет")
                 )));
@@ -152,11 +193,11 @@ public class TodoList {
         Messages.separator('=', 75);
 
         if (sortBy.equals("2")) {
-            String displayFormat = "%-15s %-10s %-10s %-25s %-10s";
+            String displayFormat = "%-15s %-15s %-10s %-10s %-25s %-10s";
 
             if (taskList.size() > 0) {
-                System.out.println(String.format(displayFormat, "PROJECT", "TITLE", "DESCRIPTION","DUE DATE", "COMPLETED"));
-                System.out.println(String.format(displayFormat, "=======", "=====", "========","========", "========="));
+                System.out.println(String.format(displayFormat, "PROJECT", "TITLE", "DESCRIPTION", "FrequencyTask", "DUE DATE", "COMPLETED"));
+                System.out.println(String.format(displayFormat, "=======", "=====", "========", "===============", "========", "========="));
             } else {
                 System.out.println(Messages.RED_TEXT + "No tasks to show" + Messages.RESET_TEXT);
             }
@@ -166,15 +207,16 @@ public class TodoList {
                     .forEach(task -> System.out.println(String.format(displayFormat, task.getProject(),
                             task.getTitle(),
                             task.getTaskDescription(),
+                            task.getLd(),
                             task.getDueDate(),
                             (task.isComplete() ? "Да" : "Нет")
                     )));
         } else {
-            String displayFormat = "%-15s %-10s %-10s %-25s %-10s";
+            String displayFormat = "%-15s %-15s %-10s %-10s %-25s %-10s";
 
             if (taskList.size() > 0) {
-                System.out.println(String.format(displayFormat, "DUE DATE", "TITLE", "PROJECT","DESCRIPTION", "COMPLETED"));
-                System.out.println(String.format(displayFormat, "========", "=====", "=======", "=========","========="));
+                System.out.println(String.format(displayFormat, "DUE DATE", "FrequencyTask", "TITLE", "PROJECT", "DESCRIPTION", "COMPLETED"));
+                System.out.println(String.format(displayFormat, "========", "=========", "============", "=======", "=========", "========="));
             } else {
                 System.out.println(Messages.RED_TEXT + "Никаких задач для показа" + Messages.RESET_TEXT);
             }
@@ -182,6 +224,7 @@ public class TodoList {
             taskList.stream()
                     .sorted(Comparator.comparing(Task::getDueDate))
                     .forEach(task -> System.out.println(String.format(displayFormat, task.getDueDate(),
+                            task.getLd(),
                             task.getTitle(),
                             task.getProject(),
                             task.getTaskDescription(),
@@ -304,7 +347,9 @@ public class TodoList {
             Messages.showMessage(e.getMessage(), true);
             return false;
         }
-    }      public void runTask() {
+    }
+
+    public void runTask() {
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(
@@ -321,6 +366,7 @@ public class TodoList {
         // если вы хотите немедленно запустить задачу, установите для 2-го параметра значение 0
         TimeUnit.HOURS.toMillis(24);
         // time.schedule(new CustomTask(), calendar.getTime(), TimeUnit.HOURS.toMillis(24));
-    }
 
+
+    }
 }
