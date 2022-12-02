@@ -6,7 +6,6 @@ import java.util.TimerTask;
 
 public class ScheduledTask extends TimerTask {
     Date now;
-
     // Добавляем такс
 
     public void run() {

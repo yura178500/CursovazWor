@@ -15,7 +15,7 @@ public class Task implements Serializable {
     private String taskDescription;
     // Строка, содержащая описание задачи, и она не может быть пустой или null.
     private boolean complete;
-    // Дата пертодичности задания
+    // Дата периодичности задания
     private LocalDate ld;
     // Дата выполнения задания в формате гггг-мм-дд
     private LocalDate dueDate;
@@ -23,11 +23,6 @@ public class Task implements Serializable {
 
     public LocalDate getLd() {
         return ld;
-    }
-
-    public void setLd(LocalDate ld) {
-        this.ld = ld;
-
     }
 
     /**
@@ -45,7 +40,6 @@ public class Task implements Serializable {
         this.setLd(ld);
         this.setDueDate(dueDate);
     }
-
     /**
      * // Способ получения описания задачи
      * //возвращает строку, содержащую название задачи
@@ -148,6 +142,17 @@ public class Task implements Serializable {
         DateTimeFormatter formattedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         this.dueDate = LocalDate.parse(dueDate.format(formattedDate));
     }
+    public void setLd(LocalDate ld) throws DateTimeException {
+        // Выдает исключение DateTimeException, если задана прошедшая дата
+        if (ld.compareTo(ld.now()) < 0) {
+            throw new DateTimeException("Прошедшая дата не допускается");
+        }
+
+        //Убедитесь, что срок оплаты сохранен в формате гггг-ММ-дд
+        DateTimeFormatter formattedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        this.ld = LocalDate.parse(ld.format(formattedDate));
+    }
+
 
     /**
      * // Способ получения данных задачи в виде форматированной строки для отображения в нескольких строках
@@ -158,7 +163,8 @@ public class Task implements Serializable {
                 "\nЗадача     : " + title +
                         "\nПроект   : " + project +
                         "\nОписание : " + taskDescription +
-                        "\nСтатус   : " + (complete ? "Завершено" : "НЕ ЗАВЕРШЕНО") +
+                        "\nСтатус   : " + (complete ? "Завершено " : "НЕ ЗАВЕРШЕНО ") +
+                        "\n Периодичность " +ld +
                         "\nДата  : " + dueDate +
                         "\n");
     }

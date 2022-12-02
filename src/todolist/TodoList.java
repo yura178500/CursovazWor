@@ -26,7 +26,6 @@ public class TodoList {
         MONTHLY(LocalDate.of(2022, 12, 1)), //ежемесячная
         ANNUAL(LocalDate.of(2022, 12, 1)); //ежегодная
 
-
         private LocalDate localDate;
 
 
@@ -39,6 +38,7 @@ public class TodoList {
 
             Objects.requireNonNull(ld);
             this.localDate = ld;
+
         }
 
         // Getter
@@ -46,7 +46,7 @@ public class TodoList {
             return this.localDate;
         }
 
-        LocalDate ld = getLocalDate();
+
     }
 
 
@@ -83,9 +83,9 @@ public class TodoList {
             String project = scan.nextLine();
             System.out.print(">>> Описание задачи: ");
             String taskDescription = scan.nextLine();
-            System.out.print("Выбор периодичности задачи : ");
+            System.out.print("Выбор периодичности задачи [example: 2022-12-01] : ");
             LocalDate ld = LocalDate.parse(scan.nextLine());
-            System.out.print(">>> Due Date [example: 2022-12-27] : ");
+            System.out.print(">>> Due Date [example: 2022-12-01] : ");
             LocalDate dueDate = LocalDate.parse(scan.nextLine());
 
             this.taskList.add(new Task(title, project, taskDescription, ld, dueDate));
@@ -138,7 +138,7 @@ public class TodoList {
                 isTaskUpdated = true;
             }
 
-            System.out.print(">>> Due Date [example: 2022-12-27] : ");
+            System.out.print(">>> Due Date [example: 2022-12-01] : ");
             String dueDate = scan.nextLine();
             if (!(dueDate.trim().equals("") || dueDate == null)) {
                 task.setDueDate(LocalDate.parse(dueDate));
@@ -366,7 +366,7 @@ public class TodoList {
         // Начните выполнение задачи в понедельник в 15:40:00, период установлен на 24 часов
         // если вы хотите немедленно запустить задачу, установите для 2-го параметра значение 0
         TimeUnit.HOURS.toMillis(24);
-        // time.schedule(new CustomTask(), calendar.getTime(), TimeUnit.HOURS.toMillis(24));
+       // time.schedule(new CustomTask(), calendar.getTime(), TimeUnit.HOURS.toMillis(24));
 
 
     }

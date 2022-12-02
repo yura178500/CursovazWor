@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 
 public class Main {
-
     public static String filename = "Задача";
 
 
